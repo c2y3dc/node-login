@@ -16,14 +16,18 @@ var configDB = require('./config/database.js');
 
 //configuration
 mongoose.connect(configDB.url); //connect to database
+//mongoose status
+mongoose.connection.on('connected', function(){ console.log('mongoose connected')});
+mongoose.connection.on('error', function(err){console.log('mongoose error', err)});
+mongoose.connection.on('disconnected', function(){ console.log("mongoose disconnected")});
 
-// require('./config/passport')(passport); // pass passport for configuration
+require('./config/passport')(passport); // pass passport for configuration
 
 //set up for express app
 app.use(morgan('dev')); //log every request to console
 app.use(cookieParser()); //read cookies for auth
-// app.use(bodyParser.urlencoded({extended: true})); //get information for html forms
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true})); //get information for html forms
+// app.use(bodyParser());
 
 app.set('view engine', 'ejs'); //set up ejs for templating
 
