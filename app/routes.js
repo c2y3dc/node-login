@@ -39,6 +39,17 @@ module.exports = function(app, passport) {
     });
   });
 
+  //Facebook routes
+  //facebook auth and login
+  app.get('/auth/facebook', passport.authenticate('facebook', {scope:'email'}));
+
+  //handle cb after user auths with fb
+  app.get('/auth/facebook/callback',
+  	passport.authenticate('facebook', {
+  		successRedirect: '/profile',
+  		failureRedirect: '/'
+  	}));
+
   //logout
   app.get('/logout', function(req, res) {
     req.logout();
