@@ -35,7 +35,7 @@ module.exports = function(passport) {
       }
       //check if user with same email exists
       if (user) {
-        return done(null, false, req.flash('signupMessage', 'Email taken'));
+        return done(null, false, req.flash('signupMessage', 'Email taken.'));
       }else {
         //if email available create user
         var newUser = new User();
@@ -55,4 +55,31 @@ module.exports = function(passport) {
     });
   });
 	}));
+
+	//local login
+	passport.use('local-login', new LocalStrategy({
+		usernameField: 'email',
+		passwordField: 'password',
+		passReqToCallback: true //pass back req to cb
+	},
+	//cb with email and pw from form
+	function(req, email, password, done){ 
+		//check to see if user exists
+		//find email that matches form email
+		User.findOne({'local.email': email}, function(err, user){
+			if(err){
+				return done(err);
+			}
+			//if no user display error message using connect-flash
+			if(!user){
+				return done(null, false, req.flash('loginMessage', 'User not found.'))
+			}
+			//if user exist and password is wrong display error message
+			if(!user.validPassword(password)){
+				return done(null, false, req.flash('loginMessage', 'The email and password you entered don\'t match.'))
+			}
+			//if user exists and password is correct
+			return done(null, user);
+		})
+	}))
 };
