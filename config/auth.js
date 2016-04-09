@@ -5,8 +5,8 @@ module.exports = {
 		'callbackURL': 'http://localhost:8080/auth/facebook/callback'
 	},	
 	'twitterAuth':{
-		'clientID':'clientID',
-		'clientSecret': 'clientSecret',
+		'consumerKey':'kDHwq34lGFyoZiXP0rFW05u9m',
+		'consumerSecret': 'ZD3eD6nJR00JuASeZvcTfM0miqBUNCpUIcB3fpCR5POdnanGyc',
 		'callbackURL': 'http://localhost:8080/auth/twitter/callback'
 	},
 

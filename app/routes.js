@@ -39,6 +39,12 @@ module.exports = function(app, passport) {
     });
   });
 
+  //logout
+  app.get('/logout', function(req, res) {
+    req.logout();
+    res.redirect('/');
+  });
+
   //Facebook routes
   //facebook auth and login
   app.get('/auth/facebook', passport.authenticate('facebook', {scope:'email'}));
@@ -50,11 +56,15 @@ module.exports = function(app, passport) {
   		failureRedirect: '/'
   	}));
 
-  //logout
-  app.get('/logout', function(req, res) {
-    req.logout();
-    res.redirect('/');
-  });
+  //Twitter routes
+  app.get('/auth/twitter', passport.authenticate('twitter'));
+
+  //handle cb after auth with twitter
+  app.get('/auth/twitter/callback',
+  	passport.authenticate('twitter', {
+  		successRedirect: '/profile',
+  		failureRedirect: '/'
+  	}))
 };
 
 // middleware to make sure a user is logged in
