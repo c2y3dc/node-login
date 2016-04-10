@@ -1,10 +1,10 @@
 //load things
-var mongoose = require('mongoose');
-var bcrypt = require('bcrypt-nodejs');
-var uuid = require('uuid');
+const mongoose = require('mongoose');
+const bcrypt = require('bcrypt-nodejs');
+const uuid = require('uuid');
 
 //define schema for user model
-var userSchema = mongoose.Schema({
+const userSchema = mongoose.Schema({
   local: {
     email: String,
     password: String,
@@ -27,24 +27,24 @@ var userSchema = mongoose.Schema({
 
 //methods
 //generate hash
-userSchema.methods.generateHash = function(password) {
+userSchema.methods.generateHash = (password) => {
   return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
 };
 
-userSchema.methods.confirmationHash = function(){
+userSchema.methods.confirmationHash = () => {
   return uuid();
 }
 
 //password check
-userSchema.methods.validPassword = function(password) {
+userSchema.methods.validPassword = (password) => {
   return bcrypt.compareSync(password, this.local.password);
 };
 
-userSchema.statics.markUserAsConfirmed = function (confirmationHash, cb) {
+userSchema.statics.markUserAsConfirmed = (confirmationHash, cb) => {
   return this.update(
     { 'local.confirmationHash': confirmationHash }, 
     { 'local.confirmed': true },
-    function (err, res) {
+    (err, res) => {
       if (err) return cb(err)
       if (res.nModified === 0) return cb(new Error('No user found for this confirmation has.'))
       return cb(null, res);
@@ -52,11 +52,11 @@ userSchema.statics.markUserAsConfirmed = function (confirmationHash, cb) {
   );
 };
 
-userSchema.statics.passwordChange = function (confirmationHash, newPassword, cb) {
+userSchema.statics.passwordChange = (confirmationHash, newPassword, cb) => {
   return this.update(
     { 'local.confirmationHash': confirmationHash }, 
     { 'local.password': newPassword },
-    function (err, res) {
+    (err, res) => {
       if (err) return cb(err)
       if (res.nModified === 0) return cb(new Error('Password Changed Successfully!'))
       return cb(null, res);

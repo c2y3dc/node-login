@@ -1,27 +1,27 @@
 //set up
 //get all the tools we need
-var express = require('express');
-var app = express();
-var port = process.env.PORT || 8080;
-var mongoose = require('mongoose');
-var passport = require('passport');
-var flash = require('connect-flash');
+const express = require('express');
+const app = express();
+const port = process.env.PORT || 8080;
+const mongoose = require('mongoose');
+const passport = require('passport');
+const flash = require('connect-flash');
 
-var morgan = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var session = require('express-session');
+const morgan = require('morgan');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const session = require('express-session');
 
-var configDB = require('./config/database.js');
+const configDB = require('./db/database.js');
 
 //configuration
 mongoose.connect(configDB.url); //connect to database
 //mongoose status
-mongoose.connection.on('connected', function(){ console.log('mongoose connected')});
-mongoose.connection.on('error', function(err){console.log('mongoose error', err)});
-mongoose.connection.on('disconnected', function(){ console.log("mongoose disconnected")});
+mongoose.connection.on('connected', () => { console.log('mongoose connected')});
+mongoose.connection.on('error', (err) => {console.log('mongoose error', err)});
+mongoose.connection.on('disconnected', () => { console.log("mongoose disconnected")});
 
-require('./config/passport')(passport); // pass passport for configuration
+require('./app/passport')(passport); // pass passport for configuration
 
 //set up for express app
 app.use(morgan('dev')); //log every request to console
@@ -32,7 +32,7 @@ app.use(bodyParser.urlencoded({extended: true})); //get information for html for
 app.set('view engine', 'ejs'); //set up ejs for templating
 
 //required for passport
-app.use(session({secret: 'adonaiorivyishimimiira', cookie: {maxAge: 60000}, resave: true, saveUninitialized: true})); //session secret
+app.use(session({secret: process.env.PASSPORT_SECRET, cookie: {maxAge: process.env.PASSPORT_COOKIE_MAX_AGE}, resave: process.env.PASSPORT_SESSION_CONFIG, saveUninitialized: process.env.PASSPORT_SESSION_CONFIG})); //session secret
 app.use(passport.initialize());
 app.use(passport.session()); //persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session

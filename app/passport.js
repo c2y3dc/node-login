@@ -1,28 +1,28 @@
 //load stuff
 require('loadenv')();
-var LocalStrategy = require('passport-local').Strategy;
-var FacebookStrategy = require('passport-facebook').Strategy;
-var TwitterStrategy = require('passport-twitter').Strategy;
+const LocalStrategy = require('passport-local').Strategy;
+const FacebookStrategy = require('passport-facebook').Strategy;
+const TwitterStrategy = require('passport-twitter').Strategy;
 
 // console.log('env', process.env)
 
 //load user model
-var User = require('../app/models/user');
+const User = require('../app/models/user');
 
 //load auth stuff
-var utils = require('../app/utils');
+const utils = require('../app/utils');
 
 //export
-module.exports = function(passport) {
+module.exports = (passport) => {
   //passport persistent session setup
   //serialize user
-  passport.serializeUser(function(user, done) {
+  passport.serializeUser((user, done) => {
     done(null, user.id);
   });
 
   //deserialize
-  passport.deserializeUser(function(id, done) {
-    User.findById(id, function(err, user) {
+  passport.deserializeUser((id, done) => {
+    User.findById(id, (err, user) => {
       done(err, user);
     });
   });
@@ -33,14 +33,14 @@ module.exports = function(passport) {
     passwordField: 'password',
     passReqToCallback: true //pass back req to cb
   },
-	function(req, email, password, done) {
+	(req, email, password, done) => {
   //async
   //User.findOne won't run until data is sent back
-  process.nextTick(function() {
+  process.nextTick(() => {
     //check if user already logged in
     //find user with email same as form email
     if(!req.user){
-    	User.findOne({'local.email': email}, function(err, user) {
+    	User.findOne({'local.email': email}, (err, user) => {
       if (err) {
         return done(err);
       }
@@ -49,7 +49,7 @@ module.exports = function(passport) {
         return done(null, false, req.flash('signupMessage', 'Email taken.'));
       } else {
         //if email available create user
-        var newUser = new User();
+        const newUser = new User();
 
         //set local credentials
         Object.assign(newUser.local, {
@@ -59,7 +59,7 @@ module.exports = function(passport) {
           confirmed: false
         })
         //save user
-        newUser.save(function(err) {
+        newUser.save((err) => {
           if (err) {
             throw errr;
           }
@@ -71,17 +71,17 @@ module.exports = function(passport) {
     } else if ( !req.user.local.email ) {
       // ...presumably they're trying to connect a local account
       // BUT let's check if the email used to connect a local account is being used by another user
-      User.findOne({ 'local.email' :  email }, function(err, user) {
+      User.findOne({ 'local.email' :  email }, (err, user) => {
 	      if (err)
           return done(err);
 	      if (user) {
           return done(null, false, req.flash('loginMessage', 'That email is already taken.'));
 	        // Using 'loginMessage instead of signupMessage because it's used by /connect/local'
 	      } else {
-          var user = req.user;
+          const user = req.user;
           user.local.email = email;
           user.local.password = user.generateHash(password);
-          user.save(function (err) {
+          user.save((err) => {
             if (err){
 	            return done(err);
             }
@@ -104,10 +104,10 @@ module.exports = function(passport) {
     passReqToCallback: true //pass back req to cb
   },
   //cb with email and pw from form
-	function(req, email, password, done) {
+	(req, email, password, done) => {
   //check to see if user exists
   //find email that matches form email
-  User.findOne({'local.email': email}, function(err, user) {
+  User.findOne({'local.email': email}, (err, user) => {
     if (err) {
       return done(err);
     }
@@ -135,11 +135,11 @@ module.exports = function(passport) {
   },
 
   //fb will send token and profile
-	function(req, token, refreshToken, profile, done) {
+	(req, token, refreshToken, profile, done) => {
 	//async
-  process.nextTick(function() {
+  process.nextTick(() => {
   	if(!req.user){
-	    User.findOne({'facebook.id': profile.id}, function(err, user) {
+	    User.findOne({'facebook.id': profile.id}, (err, user) => {
 
       if (err) {
         return done(err);
@@ -152,7 +152,7 @@ module.exports = function(passport) {
             user.facebook.name  = profile.name.givenName + ' ' + profile.name.familyName;
             user.facebook.email = profile.emails[0].value;
 
-            user.save(function(err) {
+            user.save((err) => {
                 if (err)
                     throw err;
                 return done(null, user);
@@ -161,7 +161,7 @@ module.exports = function(passport) {
         return done(null, user); //user found return user
       }else {
         //if no user found with facebook id, create
-        var newUser = new User();
+        const newUser = new User();
 
         //set facebook info in user model
         newUser.facebook.id = profile.id;
@@ -170,7 +170,7 @@ module.exports = function(passport) {
         newUser.facebook.email = profile.emails[0].value;
 
         //save new user to db
-        newUser.save(function(err) {
+        newUser.save((err) => {
           if (err) {
             throw err;
           }
@@ -182,7 +182,7 @@ module.exports = function(passport) {
     }else{
     	//user already exists and logged in
     	//link accounts
-    	var user = req.user; //reference to user from session
+    	const user = req.user; //reference to user from session
 
     	//update current fb user credentials
     	user.facebook.id = profile.id;
@@ -191,7 +191,7 @@ module.exports = function(passport) {
     	user.facebook.email = profile.emails[0].value;
 
     	//save user
-    	user.save(function(err){
+    	user.save((err) => {
     		if(err){
     			throw err;
     		}
@@ -209,11 +209,11 @@ module.exports = function(passport) {
     profileFields: ["displayName", "name"],
     passReqToCallback: true //pass in req from route to check if user is logged in    
   },
-  function(req, token, tokenSecret, profile, done){
+  (req, token, tokenSecret, profile, done) => {
   	//make async
-  	process.nextTick(function(){
+  	process.nextTick(() => {
   		if(!req.user){
-  			User.findOne({ 'twitter.id': profile.id }, function(err, user){
+  			User.findOne({ 'twitter.id': profile.id }, (err, user) => {
   			//halt on err
   			if(err){
   				return done(err);
@@ -226,7 +226,7 @@ module.exports = function(passport) {
             user.twitter.name    = profile.username;
             user.twitter.displayName = profile.displayName;
 
-            user.save(function(err) {
+            user.save((err) => {
                 if (err)
                     throw err;
                 return done(null, user);
@@ -235,7 +235,7 @@ module.exports = function(passport) {
   				return done(null, user); //user found return user
   			}else{
   				//else create user
-  				var newUser = new User();
+  				const newUser = new User();
   				//set user data
   				newUser.twitter.id = profile.id;
   				newUser.twitter.token = token;
@@ -243,7 +243,7 @@ module.exports = function(passport) {
   				newUser.twitter.email = profile.displayName;
 
   				//save user to db
-  				newUser.save(function(err){
+  				newUser.save((err) => {
   					if(err){
   						throw err;
   					}
@@ -253,7 +253,7 @@ module.exports = function(passport) {
   			})
   		}else{
   				//else create user
-  				var user = req.user; //ref to user from session
+  				const user = req.user; //ref to user from session
   				//set user data
   				user.twitter.id = profile.id;
   				user.twitter.token = token;
@@ -261,7 +261,7 @@ module.exports = function(passport) {
   				user.twitter.email = profile.displayName;
 
   				//save user to db
-  				user.save(function(err){
+  				user.save((err) => {
   					if(err){
   						throw err;
   					}

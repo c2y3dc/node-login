@@ -1,13 +1,13 @@
 const User = require('./models/user')
 
-module.exports = function(app, passport) {
+module.exports = (app, passport) => {
   //Home page
-  app.get('/', function(req, res) {
+  app.get('/', (req, res) => {
     res.render('index.ejs');
   });
 
   //login
-  app.get('/login', function(req, res) {
+  app.get('/login', (req, res) => {
     //render the page and pass in any flash data if it exits
     res.render('login.ejs', {message: req.flash('loginMessage')});
   });
@@ -20,7 +20,7 @@ module.exports = function(app, passport) {
   }));
 
   //sign up
-  app.get('/signup', function(req, res) {
+  app.get('/signup', (req, res) => {
     // render the page and pass in any flash data if it exists
     res.render('signup.ejs', {message: req.flash('signupMessage')});
   });
@@ -54,14 +54,14 @@ module.exports = function(app, passport) {
   //profile section
   //protected loggedIn to visit
   //use route middleware to verify this (the isLoggedIn function)
-  app.get('/profile', isLoggedIn, function(req, res) {
+  app.get('/profile', isLoggedIn, (req, res) => {
     res.render('profile.ejs', {
       user: req.user // get the user out of session and pass to template
     });
   });
 
   //logout
-  app.get('/logout', function(req, res) {
+  app.get('/logout', (req, res) => {
     req.logout();
     res.redirect('/');
   });
@@ -89,9 +89,10 @@ module.exports = function(app, passport) {
 
   //Authorize - already signed in / connect other social accounts
   //local----
-  app.get('/connect/local', function(req, res){
+  app.get('/connect/local', (req, res) => {
   	res.render('connect-local.ejs', {message: req.flash('loginMessage')});
   });
+
   app.post('/connect/local', passport.authenticate('local-signup', {
   	successRedirect: '/profile',
   	failureRedirect: '/connect/local',
@@ -122,29 +123,29 @@ module.exports = function(app, passport) {
 
   //Unlink==== 
   // local
-	app.get('/unlink/local', function(req, res) {
-		var user            = req.user;
+	app.get('/unlink/local', (req, res) => {
+		const user            = req.user;
 		user.local.email    = undefined;
 		user.local.password = undefined;
-		user.save(function(err) {
+		user.save((err) => {
 			res.redirect('/profile');
 		});
 	});
 
 	// facebook
-	app.get('/unlink/facebook', function(req, res) {
-		var user            = req.user;
+	app.get('/unlink/facebook', (req, res) => {
+		const user            = req.user;
 		user.facebook.token = undefined;
-		user.save(function(err) {
+		user.save((err) => {
 			res.redirect('/profile');
 		});
 	});
 
 	// twitter 
-	app.get('/unlink/twitter', function(req, res) {
-		var user           = req.user;
+	app.get('/unlink/twitter', (req, res) => {
+		const user           = req.user;
 		user.twitter.token = undefined;
-		user.save(function(err) {
+		user.save((err) => {
 			res.redirect('/profile');
 		});
 	});

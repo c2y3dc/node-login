@@ -2,7 +2,7 @@ require('loadenv')();
 const sendgrid = require('sendgrid')(process.env.SENDGRID_API_KEY);
 
 module.exports = {
-	sendConfirmationEmail: function (user, cb) {
+	sendConfirmationEmail: (user, cb) => {
 		sendgrid.send({
 		  to:       user.email,
 		  from:     `ervinchow@gmail.com`,
@@ -11,12 +11,12 @@ module.exports = {
 		  	Welcome!<br/>
 		  	We're glad you're here,<br/>
 		  	${user.email}.<br/>
-		  	<a href="http://localhost:8080/confirm/${user.confirmationHash}/">
+		  	<a href="${process.env.URL}/confirm/${user.confirmationHash}/">
 		  	<button type="button">Activate Account</button></a>
-		  	<a href="http://localhost:8080/reset/${user.confirmationHash}/">
+		  	<a href="${process.env.URL}/reset/${user.confirmationHash}/">
 		  	<button type="button">Reset Account</button></a>
 		  `
-		}, function(err, json) {
+		}, (err, json) => {
 		  if (err) { return console.error(err); }
 		  console.log(json);
 		  if (typeof cb === 'function') {
