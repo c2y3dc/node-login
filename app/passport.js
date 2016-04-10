@@ -64,7 +64,7 @@ module.exports = (passport) => {
             throw errr;
           }
           utils.sendConfirmationEmail(newUser.local);
-          return done(null, newUser);
+          return done(null, false, req.flash('signupMessage', 'Thanks for signing up! Please check your email for activation instructions.'), newUser);
         });
       }
     });
@@ -86,7 +86,7 @@ module.exports = (passport) => {
 	            return done(err);
             }
             
-            return done(null,user);
+            return done(null, user);
           });
 	      }
       });
@@ -118,6 +118,9 @@ module.exports = (passport) => {
     //if user exist and password is wrong display error message
     if (!user.validPassword(password)) {
       return done(null, false, req.flash('loginMessage', 'The email and password you entered don\'t match.'));
+    }
+    if (!user.isActivated()){
+      return done(null, false, req.flash('loginMessage', 'Oops looks like you have not activated your account yet! Please check your email'))
     }
     //if user exists and password is correct
     return done(null, user);

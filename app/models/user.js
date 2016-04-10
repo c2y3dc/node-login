@@ -36,11 +36,13 @@ userSchema.methods.confirmationHash = () => {
 }
 
 //password check
-userSchema.methods.validPassword = (password) => {
+userSchema.methods.validPassword = function(password) {
   return bcrypt.compareSync(password, this.local.password);
 };
 
-userSchema.statics.markUserAsConfirmed = (confirmationHash, cb) => {
+
+//activation
+userSchema.statics.markUserAsConfirmed = function(confirmationHash, cb){
   return this.update(
     { 'local.confirmationHash': confirmationHash }, 
     { 'local.confirmed': true },
@@ -52,7 +54,12 @@ userSchema.statics.markUserAsConfirmed = (confirmationHash, cb) => {
   );
 };
 
-userSchema.statics.passwordChange = (confirmationHash, newPassword, cb) => {
+//activation check
+userSchema.methods.isActivated = function() {
+  return this.local.confirmed;
+}
+
+userSchema.statics.passwordChange = function(confirmationHash, newPassword, cb){
   return this.update(
     { 'local.confirmationHash': confirmationHash }, 
     { 'local.password': newPassword },
