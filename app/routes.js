@@ -65,6 +65,68 @@ module.exports = function(app, passport) {
   		successRedirect: '/profile',
   		failureRedirect: '/'
   	}))
+
+  //Authorize - already signed in / connect other social accounts
+  //local----
+  app.get('/connect/local', function(req, res){
+  	res.render('connect-local.ejs', {message: req.flash('loginMessage')});
+  });
+  app.post('/connect/local', passport.authenticate('local-signup', {
+  	successRedirect: '/profile',
+  	failureRedirect: '/connect/local',
+  	failureFlash: true
+  }))
+
+  //facebook----
+  //send to fb for authorization
+  app.get('/connect/facebook', passport.authorize('facebook', { scope: 'email' }));
+
+  //handle cb after fb authorization
+  app.get('/connect/facebook/callback',
+  	passport.authorize('facebook', {
+  		successRedirect: '/profile',
+  		failureRedirect: '/'
+  	}))
+
+  //twitter----
+  //send to twitter for authorization
+  app.get('/connect/twitter', passport.authorize('twitter', { scope: 'email'}));
+
+  //handle cb after twitter authorization
+  app.get('/connect/twitter/callback',
+  	passport.authorize('twitter', {
+  		successRedirect: '/profile',
+  		failureRedirect: '/'
+  	}));
+
+  //Unlink==== 
+  // local
+	app.get('/unlink/local', function(req, res) {
+		var user            = req.user;
+		user.local.email    = undefined;
+		user.local.password = undefined;
+		user.save(function(err) {
+			res.redirect('/profile');
+		});
+	});
+
+	// facebook
+	app.get('/unlink/facebook', function(req, res) {
+		var user            = req.user;
+		user.facebook.token = undefined;
+		user.save(function(err) {
+			res.redirect('/profile');
+		});
+	});
+
+	// twitter 
+	app.get('/unlink/twitter', function(req, res) {
+		var user           = req.user;
+		user.twitter.token = undefined;
+		user.save(function(err) {
+			res.redirect('/profile');
+		});
+	});
 };
 
 // middleware to make sure a user is logged in
