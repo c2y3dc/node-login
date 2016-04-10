@@ -1,3 +1,5 @@
+const User = require('./models/user')
+
 module.exports = function(app, passport) {
   //Home page
   app.get('/', function(req, res) {
@@ -29,6 +31,25 @@ module.exports = function(app, passport) {
     failureRedirect: '/signup', //redir to signup if error
     failureFlash: true //allow flash message
   }));
+
+  //activate account
+  app.get('/confirm/:confirmationHash', (req, res) => {
+    User.markUserAsConfirmed(req.params.confirmationHash, (err) => {
+      if (err) return res.end(`Your account could not be confirmed.`);
+      res.end(`Your email has been confirmed`);
+    })
+  })
+
+  //password reset
+  app.get('/reset/:confirmationHash', (req, res) => {
+    res.render('reset.ejs', {message: req.flash('passwordMessage')});
+  })
+  app.post('/reset/:confirmationHash', (req, res) =>{
+    User.passwordChange(req.params.confirmationHash, req.body.password, (err) =>{
+      if(err) return res.end(`Your password could not be changed.`);
+      res.end(`Your password was changed successfully`);
+    })
+  })
 
   //profile section
   //protected loggedIn to visit

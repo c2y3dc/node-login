@@ -1,13 +1,16 @@
 //load stuff
+require('loadenv')();
 var LocalStrategy = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
 var TwitterStrategy = require('passport-twitter').Strategy;
+
+// console.log('env', process.env)
 
 //load user model
 var User = require('../app/models/user');
 
 //load auth stuff
-var configAuth = require('./auth');
+var utils = require('../app/utils');
 
 //export
 module.exports = function(passport) {
@@ -44,19 +47,23 @@ module.exports = function(passport) {
       //check if user with same email exists
       if (user) {
         return done(null, false, req.flash('signupMessage', 'Email taken.'));
-      }else {
+      } else {
         //if email available create user
         var newUser = new User();
 
         //set local credentials
-        newUser.local.email = email;
-        newUser.local.password = newUser.generateHash(password);
-
+        Object.assign(newUser.local, {
+          email: email,
+          password: newUser.generateHash(password),
+          confirmationHash: newUser.confirmationHash(),
+          confirmed: false
+        })
         //save user
         newUser.save(function(err) {
           if (err) {
             throw errr;
           }
+          utils.sendConfirmationEmail(newUser.local);
           return done(null, newUser);
         });
       }
@@ -120,9 +127,9 @@ module.exports = function(passport) {
   //FACEBOOK
 
   passport.use(new FacebookStrategy({
-    clientID: configAuth.facebookAuth.clientID,
-    clientSecret: configAuth.facebookAuth.clientSecret,
-    callbackURL: configAuth.facebookAuth.callbackURL,
+    clientID: process.env.FB_CLIENT_ID,
+    clientSecret: process.env.FB_CLIENT_SECRET,
+    callbackURL: process.env.URL + '/auth/facebook/callback',
     profileFields: ["emails", "displayName", "name"],
     passReqToCallback: true //pass in req from route to check if user is logged in
   },
@@ -196,9 +203,9 @@ module.exports = function(passport) {
 
   //Twitter
   passport.use(new TwitterStrategy({
-  	consumerKey: configAuth.twitterAuth.consumerKey,
-  	consumerSecret: configAuth.twitterAuth.consumerSecret,
-  	callbackURL: configAuth.twitterAuth.callbackURL,
+  	consumerKey: process.env.TWITTER_KEY,
+  	consumerSecret: process.env.TWITTER_SECRET,
+  	callbackURL: process.env.URL + '/auth/twitter/callback',
     profileFields: ["displayName", "name"],
     passReqToCallback: true //pass in req from route to check if user is logged in    
   },
