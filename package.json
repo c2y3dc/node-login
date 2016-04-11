@@ -12,7 +12,6 @@
     "express": "^4.13.4",
     "express-session": "^1.13.0",
     "loadenv": "^2.1.0",
-    "mandrill-api": "^1.0.45",
     "method-override": "^2.3.5",
     "mongoose": "^4.4.11",
     "morgan": "^1.7.0",
