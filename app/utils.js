@@ -22,7 +22,6 @@ module.exports = {
     })
   },
   sendPasswordResetEmail: (user, cb) => {
-    console.log('EMAIL user,', user)
     sendgrid.send({
       to: user.local.email,
       from: `ervinchow@gmail.com`,
