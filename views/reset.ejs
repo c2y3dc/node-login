@@ -22,8 +22,8 @@
     <form action="/reset" method="post">
         <div class="form-group">
             <label>New Password</label>
-            <input type="password" class="form-control" name="password1">
-            <input type="password" class="form-control" name="password2">
+            <input type="hidden" name="confirmationHash" value="<%= confirmationHash %>">
+            <input type="password" class="form-control" name="password">
         </div>
 
         <button type="submit" class="btn btn-warning btn-lg">Submit</button>
