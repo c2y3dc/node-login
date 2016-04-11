@@ -1,4 +1,3 @@
-// load stuff
 require('loadenv')()
 const LocalStrategy = require('passport-local').Strategy
 const FacebookStrategy = require('passport-facebook').Strategy
@@ -46,21 +45,21 @@ module.exports = (passport) => {
             // save user
             newUser.save((err) => {
               if (err) {
-                throw errr
+                throw err
               }
               utils.sendConfirmationEmail(newUser.local)
               return done(null, false, req.flash('signupMessage', 'Thanks for signing up! Please check your email for activation instructions.'), newUser)
             })
           })
         } else if (!req.user.local.email) {
-          // ...presumably they're trying to connect a local account
-          // BUT let's check if the email used to connect a local account is being used by another user
+          // user is trying to connect a local account
+          // check if the email used to connect a local account is being used by another user
           User.findOne({ 'local.email': email }, (err, user) => {
-            if (err)
+            if (err) {
               return done(err)
+            }
             if (user) {
               return done(null, false, req.flash('loginMessage', 'That email is already taken.'))
-            // Using 'loginMessage instead of signupMessage because it's used by /connect/local'
             } else {
               const user = req.user
               user.local.email = email
@@ -127,7 +126,6 @@ module.exports = (passport) => {
       process.nextTick(() => {
         if (!req.user) {
           User.findOne({'facebook.id': profile.id}, (err, user) => {
-
             if (err) {
               return done(err)
             }
@@ -140,8 +138,9 @@ module.exports = (passport) => {
                 user.facebook.email = profile.emails[0].value
 
                 user.save((err) => {
-                  if (err)
+                  if (err) {
                     throw err
+                  }
                   return done(null, user)
                 })
               }
@@ -194,7 +193,7 @@ module.exports = (passport) => {
     consumerSecret: process.env.TWITTER_SECRET,
     callbackURL: process.env.URL + '/auth/twitter/callback',
     profileFields: ['displayName', 'name'],
-    passReqToCallback: true // pass in req from route to check if user is logged in    
+    passReqToCallback: true
   },
     (req, token, tokenSecret, profile, done) => {
       // make async
@@ -214,8 +213,9 @@ module.exports = (passport) => {
                 user.twitter.displayName = profile.displayName
 
                 user.save((err) => {
-                  if (err)
+                  if (err) {
                     throw err
+                  }
                   return done(null, user)
                 })
               }

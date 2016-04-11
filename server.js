@@ -1,5 +1,3 @@
-// set up
-// get all the tools we need
 require('loadenv')()
 const express = require('express')
 const app = express()
