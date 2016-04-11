@@ -12,13 +12,10 @@ module.exports = {
 		  	We're glad you're here,<br/>
 		  	${user.email}.<br/>
 		  	<a href="${process.env.URL}/confirm/${user.confirmationHash}/">
-		  	<button type="button">Activate Account</button></a>
-		  	<a href="${process.env.URL}/reset/${user.confirmationHash}/">
-		  	<button type="button">Reset Account</button></a>
+		  	Activate Account</a>
 		  `
     }, (err, json) => {
-      if (err) { return console.error(err); }
-      console.log(json)
+      if (err) { return console.error(err) }
       if (typeof cb === 'function') {
         return cb(err, json)
       }
@@ -33,13 +30,12 @@ module.exports = {
       html: `
 		  	Hi! <br/>
 		  	We're received a request for a password change,<br/>
-		  	${user.email}.<br/>
+		  	${user.local.email}.<br/>
 		  	<a href="${process.env.URL}/reset/${user.local.passwordResetHash}/">
-		  	<button type="button">Reset Account</button></a>
+		  	Reset Account</a>
 		  `
     }, (err, json) => {
-      if (err) { return console.error(err); }
-      console.log(json)
+      if (err) { return console.error(err) }
       if (typeof cb === 'function') {
         return cb(err, json)
       }

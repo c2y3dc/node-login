@@ -1,4 +1,4 @@
-<% include header %>
+<% include templates/header %>
 <div class="container">
     <div class="page-header text-center">
         <h1><span class="fa fa-anchor"></span> Profile Page</h1>
@@ -29,7 +29,6 @@
             <div class="well">
                 <h3 class="text-primary"><span class="fa fa-facebook"></span> Facebook</h3>
 
-                <!-- check if the user has this token (is the user authenticated with this social account) -->
                 <% if (user.facebook.token) { %>
                     <p>
                         <strong>id</strong>: <%= user.facebook.id %><br>
@@ -37,7 +36,6 @@
                         <strong>email</strong>: <%= user.facebook.email %><br>
                         <strong>name</strong>: <%= user.facebook.name %><br>
                     </p>
-
                     <a href="/unlink/facebook" class="btn btn-primary">Unlink</a>
                 <% } else { %>
                     <a href="/connect/facebook" class="btn btn-primary">Connect Facebook</a>
@@ -51,8 +49,6 @@
         <div class="col-sm-6">
             <div class="well">
                 <h3 class="text-info"><span class="fa fa-twitter"></span> Twitter</h3>
-
-                <!-- check if the user has this token (is the user authenticated with this social account) -->
                 <% if (user.twitter.token) { %>
                     <p>
                         <strong>id</strong>: <%= user.twitter.id %><br>
@@ -60,7 +56,6 @@
                         <strong>username</strong>: <%= user.twitter.name %><br>
                         <strong>name</strong>: <%= user.twitter.email %>
                     </p>
-
                     <a href="/unlink/twitter" class="btn btn-info">Unlink</a>
                 <% } else { %>
                     <a href="/connect/twitter" class="btn btn-info">Connect Twitter</a>
@@ -71,4 +66,4 @@
         </div>
     </div>
 </div>
-<% include footer %>
+<% include templates/footer %>

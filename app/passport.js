@@ -4,38 +4,26 @@ const LocalStrategy = require('passport-local').Strategy
 const FacebookStrategy = require('passport-facebook').Strategy
 const TwitterStrategy = require('passport-twitter').Strategy
 
-// console.log('env', process.env)
-
-// load user model
 const User = require('../app/models/user')
-
-// load auth stuff
 const utils = require('../app/utils')
 
-// export
 module.exports = (passport) => {
-  // passport persistent session setup
-  // serialize user
   passport.serializeUser((user, done) => {
     done(null, user.id)
   })
 
-  // deserialize
   passport.deserializeUser((id, done) => {
     User.findById(id, (err, user) => {
       done(err, user)
     })
   })
 
-  // local signup
   passport.use('local-signup', new LocalStrategy({
     usernameField: 'email',
     passwordField: 'password',
     passReqToCallback: true // pass back req to cb
   },
     (req, email, password, done) => {
-      // async
-      // User.findOne won't run until data is sent back
       process.nextTick(() => {
         // check if user already logged in
         // find user with email same as form email

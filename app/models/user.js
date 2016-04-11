@@ -51,11 +51,8 @@ userSchema.statics.hasUser = function (email, cb) {
   return this.findOne({'local.email': email}, {}, cb)
 }
 
-// create password reset hash
 userSchema.statics.createPasswordResetHash = function (user, cb) {
   const passwordHash = user.passwordResetHash()
-  console.log('user.email', user.email, user)
-  console.log('passwordHash', passwordHash)
   return this.update(
     { 'local.email': user.local.email },
     { 'local.passwordResetHash': passwordHash },
@@ -68,7 +65,6 @@ userSchema.statics.createPasswordResetHash = function (user, cb) {
   )
 }
 
-// activation
 userSchema.statics.markUserAsConfirmed = function (confirmationHash, cb) {
   return this.update(
     { 'local.confirmationHash': confirmationHash },
@@ -81,12 +77,10 @@ userSchema.statics.markUserAsConfirmed = function (confirmationHash, cb) {
   )
 }
 
-// activation check
 userSchema.methods.isActivated = function () {
   return this.local.confirmed
 }
 
-// Password reset
 userSchema.statics.passwordChange = function (passwordResetHash, newPassword, cb) {
   this.findOne({ 'local.passwordResetHash': passwordResetHash }, function (err, user) {
     if (err) return cb(err)
@@ -100,5 +94,4 @@ userSchema.statics.passwordChange = function (passwordResetHash, newPassword, cb
   })
 }
 
-// create the model for users and export
 module.exports = mongoose.model('User', userSchema)
